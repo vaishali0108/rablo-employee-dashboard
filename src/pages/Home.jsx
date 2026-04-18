@@ -21,33 +21,30 @@ function Home() {
         const cleanData = data.filter(
           (emp) => !deletedIds.includes(emp.id)
         );
-        
+
         setEmployees(cleanData);
         setFiltered(cleanData);
       })
       .catch((err) => console.log(err));
   }, []);
 
-  // 🔍 SEARCH
-  const handleSearch = () => {
+  // 🔍 REAL-TIME SEARCH (MAIN FIX)
+  useEffect(() => {
     if (!searchId) {
       setFiltered(employees);
-      return;
+    } else {
+      const result = employees.filter((emp) =>
+        emp.id.toString().includes(searchId)
+      );
+      setFiltered(result);
     }
-
-    const result = employees.filter(
-      (emp) => emp.id === Number(searchId)
-    );
-
-    setFiltered(result);
-  };
+  }, [searchId, employees]);
 
   // 🗑️ DELETE (UI + localStorage)
   const handleDelete = (id) => {
     const updated = employees.filter((emp) => emp.id !== id);
 
     setEmployees(updated);
-    setFiltered(updated);
 
     const deletedIds =
       JSON.parse(localStorage.getItem(DELETED_KEY)) || [];
@@ -70,18 +67,16 @@ function Home() {
 
       {/* SEARCH */}
       <div className="search-box">
-         <div className="search-input">
-    <FiSearch className="search-icon" />
+        <div className="search-input">
+          <FiSearch className="search-icon" />
 
-    <input
-      type="number"
-      placeholder="Search by ID"
-      value={searchId}
-      onChange={(e) => setSearchId(e.target.value)}
-    />
-  </div>
-
-        <button onClick={handleSearch}>Search</button>
+          <input
+            type="number"
+            placeholder="Search by ID"
+            value={searchId}
+            onChange={(e) => setSearchId(e.target.value)}
+          />
+        </div>
       </div>
 
       {/* GRID */}
